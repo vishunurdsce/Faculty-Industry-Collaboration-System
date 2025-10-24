@@ -57,6 +57,13 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Navigation Section - More Transparent */
+.nav-section .section {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
 .section h2 {
     color: #2c3e50;
     margin-bottom: 20px;
@@ -175,6 +182,41 @@ body {
     font-size: 1.3em;
 }
 
+/* Card-style Navigation Buttons */
+.nav-card-button {
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, rgba(227, 242, 253, 0.9), rgba(240, 248, 255, 0.9));
+    color: #2c3e50;
+    border-left: 5px solid #3498db;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.nav-card-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, rgba(212, 230, 241, 0.9), rgba(232, 244, 252, 0.9));
+}
+
+.nav-card-button[data-active="true"] {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
+    color: white;
+    border-left: 5px solid #2980b9;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.nav-card-button[data-active="true"]:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .dashboard {
@@ -183,5 +225,27 @@ body {
     
     .header h1 {
         font-size: 2em;
+    }
+    
+    .search-container {
+        flex-direction: column;
+    }
+    
+    .search-container input {
+        margin-bottom: 10px;
+    }
+    
+    .nav-section .section > div {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .nav-section .section > div > div:first-child {
+        order: 2;
+    }
+    
+    .nav-section .section > div > div:last-child {
+        order: 1;
     }
 }

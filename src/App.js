@@ -1,13 +1,10 @@
-const { useState, useEffect, useMemo, useCallback } = React;
+const { useState, useEffect, useMemo } = React;
 
 function App() {
-    // Hook 1: useState for search term
+    const [currentPage, setCurrentPage] = useState('home');
     const [searchTerm, setSearchTerm] = useState('');
-    
-    // Hook 2: useState for loading state
     const [isLoading, setIsLoading] = useState(false);
     
-    // Hook 3: useMemo for filtered data
     const { filteredFaculty, filteredIndustry } = useMemo(() => {
         if (!searchTerm) {
             return {
@@ -33,7 +30,6 @@ function App() {
         };
     }, [searchTerm]);
 
-    // Hook 4: useEffect for loading simulation
     useEffect(() => {
         if (searchTerm) {
             setIsLoading(true);
@@ -54,51 +50,75 @@ function App() {
 
     return (
         <div className="container">
-            <div className="header">
-                <h1>AI-driven Faculty-Industry Collaboration</h1>
-                <p>Intelligent Recommendation System</p>
-            </div>
-            
-            <FilterBar 
-                searchTerm={searchTerm}
-                onSearch={handleSearch}
-                onClear={clearSearch}
-                isLoading={isLoading}
-            />
-            
-            {isLoading ? (
-                <div style={{textAlign: 'center', padding: '20px'}}>
-                    <p>🔍 Finding matches...</p>
-                </div>
-            ) : (
-                <>
-                    {searchTerm && (
-                        <div style={{background: 'rgba(255,255,255,0.9)', padding: '15px', borderRadius: '10px', marginBottom: '20px'}}>
-                            <strong>Found {filteredFaculty.length} faculty and {filteredIndustry.length} industry partners matching "{searchTerm}"</strong>
-                        </div>
-                    )}
-                    
-                    <div className="dashboard">
-                        <div className="section">
-                            <h2>👨‍🏫 Faculty Experts</h2>
-                            <div className="faculty-list">
-                                {filteredFaculty.map(faculty => (
-                                    <FacultyCard key={faculty.id} faculty={faculty} />
-                                ))}
-                            </div>
+            {/* Styled Navigation Box - Transparent/Lucent */}
+            <div className="nav-section" style={{ marginBottom: '30px' }}>
+                <div className="section" style={{
+                    background: 'rgba(255, 255, 255, 0.7)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                }}>
+                    <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '20px'
+                    }}>
+                        {/* System Title - Moved to LEFT */}
+                        <div style={{
+                            color: '#2c3e50',
+                            fontWeight: 'bold',
+                            fontSize: '24px'
+                        }}>
+                            AI Collaboration System
                         </div>
                         
-                        <div className="section">
-                            <h2>🏢 Industry Partners</h2>
-                            <div className="industry-list">
-                                {filteredIndustry.map(industry => (
-                                    <IndustryCard key={industry.id} industry={industry} />
-                                ))}
-                            </div>
+                        {/* Page Navigation - Moved to RIGHT */}
+                        <div style={{ 
+                            display: 'flex', 
+                            gap: '15px', 
+                            alignItems: 'center',
+                            flexWrap: 'wrap'
+                        }}>
+                            <button 
+                                onClick={() => setCurrentPage('home')}
+                                className="nav-card-button"
+                                data-active={currentPage === 'home'}
+                            >
+                                🏠 Home
+                            </button>
+                            <button 
+                                onClick={() => setCurrentPage('matches')}
+                                className="nav-card-button"
+                                data-active={currentPage === 'matches'}
+                            >
+                                🤝 AI Matches
+                            </button>
+                            <button 
+                                onClick={() => setCurrentPage('about')}
+                                className="nav-card-button"
+                                data-active={currentPage === 'about'}
+                            >
+                                ℹ️ About
+                            </button>
                         </div>
                     </div>
-                </>
+                </div>
+            </div>
+
+            {/* Render Current Page */}
+            {currentPage === 'home' && (
+                <Home 
+                    searchTerm={searchTerm}
+                    onSearch={handleSearch}
+                    onClear={clearSearch}
+                    isLoading={isLoading}
+                    filteredFaculty={filteredFaculty}
+                    filteredIndustry={filteredIndustry}
+                />
             )}
+            {currentPage === 'matches' && <Matches />}
+            {currentPage === 'about' && <About />}
         </div>
     );
 }
