@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- Load in correct order -->
-    <script type="text/babel" src="data.js"></script>
+    <script src="./data.js"></script>
     <script type="text/babel" src="components/FilterBar.js"></script>
     <script type="text/babel" src="components/FacultyCard.js"></script>
     <script type="text/babel" src="components/IndustryCard.js"></script>
@@ -22,7 +22,11 @@
     <script type="text/babel" src="App.js"></script>
     
     <script type="text/babel">
+    // Wait a moment to ensure data.js globals are ready
+    setTimeout(() => {
         ReactDOM.render(<App />, document.getElementById('root'));
+    }, 300);
     </script>
+
 </body>
 </html>
