@@ -1,33 +1,93 @@
 import express from "express";
-import Match from "../models/Match.js";
-import Faculty from "../models/Faculty.js";
-import Industry from "../models/Industry.js";
+import mongoose from "mongoose";
+
 const router = express.Router();
-router.post("/", async (req, res) => {
-  try { const m = new Match(req.body); const saved = await m.save(); res.json(saved); }
-  catch (err) { res.status(400).json({ error: err.message }); }
+
+// Prevent OverwriteModelError: use existing models if already defined
+const Faculty = mongoose.models.Faculty || mongoose.model("Faculty", new mongoose.Schema({
+  name: String,
+  expertise: String,
+  department: String
+}), "faculties");
+
+const Industry = mongoose.models.Industry || mongoose.model("Industry", new mongoose.Schema({
+  name: String,
+  needs: String,
+  contact: String
+}), "industries");
+
+const Match = mongoose.models.Match || mongoose.model("Match", new mongoose.Schema({
+  faculty: String,
+  industry: String,
+  score: Number,
+  reason: String
+}), "matches");
+
+// 🧠 GET all matches
+router.get("/", async (req, res) => {
+  try {
+    const data = await Match.find();
+    res.json(data);
+  } catch (err) {
+    console.error("Error fetching matches:", err);
+    res.status(500).json({ error: "Failed to fetch matches" });
+  }
 });
-router.post("/generate", async (req, res) => {
+
+// 🤖 GENERATE AI matches
+router.get("/generate", async (req, res) => {
   try {
     const faculties = await Faculty.find();
     const industries = await Industry.find();
+
+    if (!faculties.length || !industries.length) {
+      return res.json({ message: "No faculty or industry data found to match.", matches: [] });
+    }
+
     const matches = [];
-    faculties.forEach(f => {
-      industries.forEach(ind => {
-        const facExp = Array.isArray(f.expertise) ? f.expertise.map(x=>x.toLowerCase()) : [];
-        const indNeeds = Array.isArray(ind.needs) ? ind.needs.map(x=>x.toLowerCase()) : [];
-        const intersection = facExp.filter(x => indNeeds.includes(x));
-        const score = Math.min(100, intersection.length * 50 + Math.floor(Math.random()*20));
-        const reason = intersection.length ? `Shared topics: ${intersection.join(", ")}` : `No direct overlap`;
-        matches.push({ faculty: f._id, industry: ind._id, score, reason });
-      });
-    });
-    const saved = await Match.insertMany(matches.slice(0,50));
-    res.json(saved);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+
+    for (const f of faculties) {
+      for (const i of industries) {
+        const fExp = (f.expertise || "").toLowerCase();
+        const iNeed = (i.needs || "").toLowerCase();
+
+        if (!fExp || !iNeed) continue;
+
+        const overlap = fExp.split(/[, ]+/).some(term => iNeed.includes(term));
+
+        if (overlap) {
+          const score = Math.floor(Math.random() * 20) + 80;
+          matches.push({
+            faculty: f.name,
+            industry: i.name,
+            score,
+            reason: `Shared topic found between "${f.expertise}" and "${i.needs}".`
+          });
+        }
+      }
+    }
+
+    await Match.deleteMany({});
+    if (matches.length > 0) await Match.insertMany(matches);
+
+    console.log(`✅ Generated ${matches.length} matches.`);
+    res.json({ message: `Generated ${matches.length} matches successfully.`, matches });
+
+  } catch (err) {
+    console.error("Error generating matches:", err);
+    res.status(500).json({ error: "Error generating matches" });
+  }
 });
-router.get("/", async (req, res) => {
-  try { const list = await Match.find().limit(200).populate('faculty').populate('industry'); res.json(list); }
-  catch (err) { res.status(500).json({ error: err.message }); }
+
+// CLEAR all matches
+router.delete("/clear", async (req, res) => {
+  try {
+    await Match.deleteMany({});
+    res.json({ message: "All matches cleared successfully" });
+  } catch (e) {
+    console.error("Error clearing matches:", e);
+    res.status(500).json({ error: "Failed to clear matches" });
+  }
 });
+
 export default router;

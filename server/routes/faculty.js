@@ -1,16 +1,38 @@
 import express from "express";
-import Faculty from "../models/Faculty.js";
+import mongoose from "mongoose";
+
 const router = express.Router();
+
+// Define Faculty schema
+const facultySchema = new mongoose.Schema({
+  name: String,
+  expertise: String,
+  department: String
+});
+
+// Model
+const Faculty = mongoose.model("Faculty", facultySchema, "faculties");
+
+// GET all faculty
 router.get("/", async (req, res) => {
-  try { const list = await Faculty.find().limit(100); res.json(list); }
-  catch (err) { res.status(500).json({ error: err.message }); }
+  try {
+    const data = await Faculty.find();
+    res.json(data);
+  } catch (err) {
+    console.error("Error fetching faculty:", err);
+    res.status(500).json({ error: "Failed to fetch faculty data" });
+  }
 });
+
+// POST new faculty
 router.post("/", async (req, res) => {
-  try { const f = new Faculty(req.body); const saved = await f.save(); res.json(saved); }
-  catch (err) { res.status(400).json({ error: err.message }); }
+  try {
+    const newFaculty = new Faculty(req.body);
+    await newFaculty.save();
+    res.json({ message: "Faculty added successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Error adding faculty" });
+  }
 });
-router.get("/:id", async (req, res) => {
-  try { const f = await Faculty.findById(req.params.id); if(!f) return res.status(404).json({ error: "Not found" }); res.json(f); }
-  catch (err) { res.status(400).json({ error: err.message }); }
-});
+
 export default router;

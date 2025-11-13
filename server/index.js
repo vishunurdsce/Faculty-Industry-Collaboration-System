@@ -7,21 +7,27 @@ import matchesRoutes from "./routes/matches.js";
 import path from "path";
 import url from "url";
 
+// --- setup paths ---
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
+// --- create app ---
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// --- connect to MongoDB ---
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/faculty-industry-collaboration";
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(()=>console.log("✅ Connected to MongoDB"))
-  .catch(e=>console.error("MongoDB connection error",e));
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((e) => console.error("❌ MongoDB connection error:", e));
 
+// --- routes ---
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/industry", industryRoutes);
 app.use("/api/matches", matchesRoutes);
 
-// Serve frontend in development from ../src for convenience, or ../build in production
+// --- serve frontend ---
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "..", "build")));
 } else {
@@ -29,11 +35,17 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.get("*", (req, res) => {
-  const indexPath = process.env.NODE_ENV === "production"
-    ? path.join(__dirname, "..", "build", "index.html")
-    : path.join(__dirname, "..", "src", "index.html");
+  const indexPath =
+    process.env.NODE_ENV === "production"
+      ? path.join(__dirname, "..", "build", "index.html")
+      : path.join(__dirname, "..", "src", "index.html");
   res.sendFile(indexPath);
 });
 
+// --- start server ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, ()=> console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 Open: http://localhost:${PORT}`);
+});
+

@@ -265,3 +265,22 @@ body {
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 .muted{ color: #cfcfcf; margin-top:10px; }
+
+input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+button {
+  background: #2e86de;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover {
+  background: #1b4f72;
+}
+

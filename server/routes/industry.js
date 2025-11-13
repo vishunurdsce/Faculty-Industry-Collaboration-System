@@ -1,16 +1,38 @@
 import express from "express";
-import Industry from "../models/Industry.js";
+import mongoose from "mongoose";
+
 const router = express.Router();
+
+// Define Industry schema
+const industrySchema = new mongoose.Schema({
+  name: String,
+  needs: String,
+  contact: String
+});
+
+// Model
+const Industry = mongoose.model("Industry", industrySchema, "industries");
+
+// GET all industries
 router.get("/", async (req, res) => {
-  try { const list = await Industry.find().limit(100); res.json(list); }
-  catch (err) { res.status(500).json({ error: err.message }); }
+  try {
+    const data = await Industry.find();
+    res.json(data);
+  } catch (err) {
+    console.error("Error fetching industries:", err);
+    res.status(500).json({ error: "Failed to fetch industry data" });
+  }
 });
+
+// POST new industry
 router.post("/", async (req, res) => {
-  try { const i = new Industry(req.body); const saved = await i.save(); res.json(saved); }
-  catch (err) { res.status(400).json({ error: err.message }); }
+  try {
+    const newIndustry = new Industry(req.body);
+    await newIndustry.save();
+    res.json({ message: "Industry added successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Error adding industry" });
+  }
 });
-router.get("/:id", async (req, res) => {
-  try { const i = await Industry.findById(req.params.id); if(!i) return res.status(404).json({ error: "Not found" }); res.json(i); }
-  catch (err) { res.status(400).json({ error: err.message }); }
-});
+
 export default router;
