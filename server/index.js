@@ -28,17 +28,13 @@ app.use("/api/industry", industryRoutes);
 app.use("/api/matches", matchesRoutes);
 
 // --- serve frontend ---
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "..", "build")));
-} else {
-  app.use(express.static(path.join(__dirname, "..", "src")));
-}
+// REVISED: Since this is a no-build React app (using Babel Standalone),
+// we serve the 'src' directory even in "production" mode on Render.
+app.use(express.static(path.join(__dirname, "..", "src")));
 
 app.get("*", (req, res) => {
-  const indexPath =
-    process.env.NODE_ENV === "production"
-      ? path.join(__dirname, "..", "build", "index.html")
-      : path.join(__dirname, "..", "src", "index.html");
+  // Always serve src/index.html
+  const indexPath = path.join(__dirname, "..", "src", "index.html");
   res.sendFile(indexPath);
 });
 

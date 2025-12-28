@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: faculty-industry-collaboration
+    env: node
+    rootDir: .
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.16.0
+      - key: MONGO_URI
+        sync: false
