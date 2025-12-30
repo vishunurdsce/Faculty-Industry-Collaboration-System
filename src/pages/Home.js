@@ -20,6 +20,7 @@ function Home({ searchTerm, onSearch, onClear, isLoading, filteredFaculty, filte
       });
       alert("✅ Faculty added successfully!");
       setFName(""); setFDept(""); setFExp("");
+      window.location.reload();
     } catch (e) {
       alert("⚠️ Error adding faculty");
     }
@@ -35,6 +36,7 @@ function Home({ searchTerm, onSearch, onClear, isLoading, filteredFaculty, filte
       });
       alert("✅ Industry added successfully!");
       setIName(""); setINeeds(""); setIContact("");
+      window.location.reload();
     } catch (e) {
       alert("⚠️ Error adding industry");
     }
